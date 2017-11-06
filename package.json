@@ -1,0 +1,19 @@
+{
+  "name": "automation-practice-dot-com",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A playground for learning about automation testing.",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "test": "protractor conf.js"
+  },
+  "author": "Randy Dowling",
+  "license": "ISC",
+  "devDependencies": {
+    "jasmine-spec-reporter": "^4.2.1",
+    "protractor": "^5.2.0"
+  }
+}
