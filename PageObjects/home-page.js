@@ -5,80 +5,73 @@ var HomePageObject = function() {
 
     this.Reset = function() {
         browser.driver.get('http://automationpractice.com/index.php')
-        var currentUrl = browser.wait(browser.driver.getCurrentUrl().then((actualUrl) => { return actualUrl}))
-        console.log(currentUrl)
         browser.ignoreSynchronization = true;
-        this.LogOut(currentUrl)
+        this.LogOut();
+        
         return this;
     }
-    
-    this.EnterSearchText = function(searchText) {
-        browser.driver.wait(function() {
-            return browser.driver.findElement(by.id('lst-ib'))
-                .then(function(elem) {
-                    elem.sendKeys(searchText);
-                    //browser.sleep(2000) // Useful for watching what's happening.
-                    return true;
-                });
-        }, 5000);
-    return this;
-    };
 
     this.Login = function(email, password) {
-        var successful;
-        var currentUrl = browser.wait(browser.driver.getCurrentUrl().then((result) => { return result }))
         browser.driver.findElement(by.className('login'))
-                .then(function(elem) {
-                    elem.click();
-                })
+            .then(function(elem) {
+                elem.click();
+            })
         browser.driver.findElement(by.id('email'))
-                .then(function(elem) {
-                    elem.sendKeys(email);
-                })
+            .then(function(elem) {
+                elem.sendKeys(email);
+            })
         browser.driver.findElement(by.id('passwd'))
-                .then(function(elem) {  
-                    elem.sendKeys(password);
-                })
+            .then(function(elem) {  
+                elem.sendKeys(password);
+            })
         browser.driver.findElement(by.id('SubmitLogin'))
-                .then(function(elem) {  
-                    elem.click();
-                })
-        this.WaitForUrlToChange(currentUrl).then(() => {
-                console.log(currentUrl.toString())
-                browser.driver.findElement(by.className('account'))
+            .then(function(elem) {  
+                elem.click();
+            })
+        if (!password || !email)
+        {
+            var pattern = /There (are|is) \d+\serrors?/
+            return browser.driver.findElement(by.css('.alert-danger > p')).getText()
                 .then((result) => { 
-                if (result) {
-                    successful = true
+                if (pattern.test(result)) {
+                    return false;
                 }
                 else {
-                    successful = false
+                    return true;
                 }   
                 },
                 (e) => { 
-                    successful = false;
+                    return true;
                 })
-        return successful
-        })                
-    };
+        }
+        else {
+            return browser.driver.findElement(by.className('account'))
+                .then((result) => { 
+                if (result) {
+                    return true;
+                }
+                else {
+                    return false;
+                }   
+                },
+                (e) => { 
+                    return false;
+                })
+        }
+    };             
 
-    this.LogOut = function(currentUrl) {
-        this.WaitForUrlToChange(currentUrl).then(() => {
-            browser.driver.findElement(by.className('logout')).then(function(elem) {
+    this.LogOut = function() {
+            browser.wait(browser.driver.findElement(by.className('logout')).then(function(elem) {
                 elem.click();
+                // TODO: Verify that logout occurred and throw error if element wasn't found.
+                return true;
             },
             (e) => { 
-                throw new Error("Couldn't find the logout button using class name 'logout'. Verify that it is on the page.");
-            })
-        })
+                console.log('Function: "LogOut" was unable to find an element with a class of "logout".')
+                return false;
+            } 
+        ))
     };
-
-    this.WaitForUrlToChange = function(currentUrl) { 
-                return browser.driver.wait(function waitForUrlToChangeTo() {
-                    return browser.driver.getCurrentUrl().then(function compareCurrentUrl(url) {
-                        return currentUrl != url
-                    });
-                });
-            }
 };
 
 module.exports = HomePageObject;
