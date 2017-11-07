@@ -8,10 +8,17 @@ describe('AutomationPractice.Com Login Test:', function() {
   })
 
   beforeEach(function(){
-      //HomePage.Reset();
   })
 
-  it('Logging in with Good Credentials should work', function() {
-    expect(HomePage.Login('randydowling@gmail.com', 'ZZpassword').WasLoginSuccessful()).toBe(true);
+  afterEach(() => {
+    HomePage.Reset();
+  })
+
+  it('Logging in with GOOD Credentials should work', function() {
+    expect(HomePage.Login('randydowling@gmail.com', 'password')).toBe(true);
+  })
+
+  it('Logging in with BAD Credentials should not work', function() {
+    expect(HomePage.Login('randydowling@gmail.com', 'ZZpassword')).toBe(false);
   })
 })
