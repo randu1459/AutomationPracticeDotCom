@@ -1,13 +1,14 @@
 var HomePageObject = function() {
     browser.driver.get('http://automationpractice.com/index.php');
-    browser.driver.manage().window().maximize();
-    const EC = protractor.ExpectedConditions;
+
+    browser.ignoreSynchronization = true;
 
     this.Reset = function() {
-        browser.driver.get('http://automationpractice.com/index.php')
+        browser.driver.get('http://automationpractice.com/index.php').then(() => {
+            this.LogOut();
+        })
         browser.ignoreSynchronization = true;
-        this.LogOut();
-        
+
         return this;
     }
 
@@ -31,18 +32,18 @@ var HomePageObject = function() {
         if (!password || !email)
         {
             var pattern = /There (are|is) \d+\serrors?/
-            return browser.driver.findElement(by.css('.alert-danger > p')).getText()
-                .then((result) => { 
-                if (pattern.test(result)) {
-                    return false;
-                }
-                else {
-                    return true;
-                }   
-                },
-                (e) => { 
-                    return true;
-                })
+            return browser.driver.wait(browser.driver.findElement(by.css('.alert-danger > p'))).then(() => {
+                return browser.driver.findElement(by.css('.alert-danger > p')).getText()
+                    .then((result) => { 
+                        if (pattern.test(result)) {
+                            return false;
+                        }
+                    },
+                        (e) => { 
+                            console.log(result);
+                            throw new Error("The '.alert-danger > p' was not found in the Login() method.")
+                        })
+            })
         }
         else {
             return browser.driver.findElement(by.className('account'))

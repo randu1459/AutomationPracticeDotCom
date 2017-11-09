@@ -5,13 +5,19 @@ describe('AutomationPractice.Com Login Test:', function() {
 
  beforeAll(function() {
       HomePage = new HomePageObject(); 
+      browser.driver.manage().window().maximize();
   })
 
   beforeEach(function(){
   })
 
   afterEach(() => {
+    browser.sleep(2000);
     HomePage.Reset();
+  })
+
+  afterAll(() => {
+    browser.quit();
   })
 
   it('Logging in with CORRECT Credentials should work', function() {
