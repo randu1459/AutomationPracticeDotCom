@@ -9,12 +9,12 @@ exports.config = {
     chromeOptions: {
       args: [ /* "--headless", "--disable-gpu", "--window-size=1366,768" */ ]
       }
-    }/* ,
+    },
 
    onPrepare: function () {
     jasmine.getEnv().addReporter(new SpecReporter({
       spec: {
-        displayStacktrace: false
+        displayStacktrace: true
       }
     }));
   },
@@ -22,5 +22,5 @@ exports.config = {
   jasmineNodeOpts: {
     showColors: true,
     print: function() {}
-  }  */
+  } 
 };

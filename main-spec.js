@@ -1,34 +1,65 @@
 var HomePageObject = require('./PageObjects/home-page.js');
+var driver = browser.driver;
 
-describe('AutomationPractice.Com Login Test:', function() {
+describe('AutomationPractice.Com Login Tests:', function() {
   var HomePage;
 
  beforeAll(function() {
       HomePage = new HomePageObject(); 
-      browser.driver.manage().window().maximize();
+      driver.manage().window().maximize();
   })
 
   beforeEach(function(){
   })
 
   afterEach(() => {
-    browser.sleep(2000);
+    driver.sleep(2000);
     HomePage.Reset();
   })
 
   afterAll(() => {
-    browser.quit();
+    driver.quit();
   })
 
-  it('Logging in with CORRECT Credentials should work', function() {
+  it('CORRECT Credentials should work', function() {
     expect(HomePage.Login('randydowling@gmail.com', 'password')).toBe(true);
   })
 
-  it('Logging in with WRONG password should not work', function() {
+  it('BAD Credentials should fail', function() {
+    expect(HomePage.Login('randudowling@gmail.com', 'ZZpassword')).toBe(false);
+  })
+
+  it('WRONG password should fail', function() {
     expect(HomePage.Login('randydowling@gmail.com', 'ZZpassword')).toBe(false);
   })
 
-  it('Logging in with NO password should not work', function() {
+  it('NO password should fail', function() {
     expect(HomePage.Login('randydowling@gmail.com', '')).toBe(false);
+  })
+
+  it('WRONG email should fail', function() {
+    expect(HomePage.Login('randudowling@gmail.com', 'password')).toBe(false);
+  })
+
+  it('NO email should fail', function() {
+    expect(HomePage.Login('', 'password')).toBe(false);
+  })
+
+  it('NO email and NO email should fail', function() {
+    expect(HomePage.Login('', '')).toBe(false);
+  })
+
+  it('Simple SQL Injection attempt should fail', function() {
+    expect(HomePage.Login("$username = 1' or '1' = '1", "$password = 1' or '1' = '1")).toBe(false);
+  })
+
+  it('Sign Out should work if logged in', function() {
+    HomePage.Login('randydowling@gmail.com', 'password');
+    expect(HomePage.LogOut()).toBe(true);
+  })
+
+  it('Sign Out should fail if not logged in', function() {
+    // Doing nothing. User is not logged in.
+    expect(HomePage.LogOut()).toBe(false);
   })
 })

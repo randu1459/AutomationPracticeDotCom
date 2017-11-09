@@ -1,10 +1,11 @@
 var HomePageObject = function() {
-    browser.driver.get('http://automationpractice.com/index.php');
+    var driver = browser.driver;
+    driver.get('http://automationpractice.com/index.php');
 
     browser.ignoreSynchronization = true;
 
     this.Reset = function() {
-        browser.driver.get('http://automationpractice.com/index.php').then(() => {
+        driver.get('http://automationpractice.com/index.php').then(() => {
             this.LogOut();
         })
         browser.ignoreSynchronization = true;
@@ -13,27 +14,27 @@ var HomePageObject = function() {
     }
 
     this.Login = function(email, password) {
-        browser.driver.findElement(by.className('login'))
+        driver.findElement(by.className('login'))
             .then(function(elem) {
                 elem.click();
             })
-        browser.driver.findElement(by.id('email'))
+        driver.findElement(by.id('email'))
             .then(function(elem) {
                 elem.sendKeys(email);
             })
-        browser.driver.findElement(by.id('passwd'))
+        driver.findElement(by.id('passwd'))
             .then(function(elem) {  
                 elem.sendKeys(password);
             })
-        browser.driver.findElement(by.id('SubmitLogin'))
+        driver.findElement(by.id('SubmitLogin'))
             .then(function(elem) {  
                 elem.click();
             })
         if (!password || !email)
         {
             var pattern = /There (are|is) \d+\serrors?/
-            return browser.driver.wait(browser.driver.findElement(by.css('.alert-danger > p'))).then(() => {
-                return browser.driver.findElement(by.css('.alert-danger > p')).getText()
+            return driver.wait(driver.findElement(by.css('.alert-danger > p'))).then(() => {
+                return driver.findElement(by.css('.alert-danger > p')).getText()
                     .then((result) => { 
                         if (pattern.test(result)) {
                             return false;
@@ -46,7 +47,7 @@ var HomePageObject = function() {
             })
         }
         else {
-            return browser.driver.findElement(by.className('account'))
+            return driver.findElement(by.className('account'))
                 .then((result) => { 
                 if (result) {
                     return true;
@@ -62,16 +63,24 @@ var HomePageObject = function() {
     };             
 
     this.LogOut = function() {
-            browser.wait(browser.driver.findElement(by.className('logout')).then(function(elem) {
+        return driver.wait(() => { return driver.findElement(by.className('logout')); }, 5000).
+            then((elem) => {
                 elem.click();
-                // TODO: Verify that logout occurred and throw error if element wasn't found.
-                return true;
+                return driver.wait(() => {
+                    return driver.findElement(by.className('login')).isDisplayed().
+                        then((isDisplayed) => {
+                            if (isDisplayed) {
+                                return true;
+                            }
+                            else {
+                                return false;
+                            }
+                        })
+                    })
             },
-            (e) => { 
-                console.log('Function: "LogOut" was unable to find an element with a class of "logout".')
+            () => {
                 return false;
-            } 
-        ))
+            })
     };
 };
 
